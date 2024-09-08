@@ -34,15 +34,25 @@
 <div id="game-container">
     <h1>Orc Tribe Management Game</h1>
 
+    <p>Week: <span id="weekCount">1</span></p>
     <p class="resource">Orc Count: <span id="orcCount">10</span></p>
     <p class="resource">Cow Count: <span id="cowCount">0</span></p>
     <p class="resource">Milk: <span id="milkCount">0</span></p>
     <p class="resource">Meat: <span id="meatCount">0</span></p>
 
-    <button onclick="stealCows()">Steal Cows</button>
-    <button onclick="tendCows()">Tend Cows (Milk)</button>
-    <button onclick="slaughterCows()">Slaughter Cows (Meat)</button>
-    <button onclick="rest()">Rest</button>
+    <h3>Allocate Orcs for the Week</h3>
+    <form id="orcAllocationForm">
+        <label for="stealOrcs">Orcs for stealing cows:</label>
+        <input type="number" id="stealOrcs" min="0" value="0"><br><br>
+
+        <label for="tendOrcs">Orcs for tending cows:</label>
+        <input type="number" id="tendOrcs" min="0" value="0"><br><br>
+
+        <label for="slaughterOrcs">Orcs for slaughtering cows:</label>
+        <input type="number" id="slaughterOrcs" min="0" value="0"><br><br>
+
+        <button type="button" onclick="passWeek()">Submit Allocations</button>
+    </form>
 
     <p id="message"></p>
 </div>
