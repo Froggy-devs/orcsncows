@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orc Tribe Management Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+        #game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #444;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .resource {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1>Orc Tribe Management Game</h1>
+
+    <p class="resource">Orc Count: <span id="orcCount">10</span></p>
+    <p class="resource">Cow Count: <span id="cowCount">0</span></p>
+    <p class="resource">Milk: <span id="milkCount">0</span></p>
+    <p class="resource">Meat: <span id="meatCount">0</span></p>
+
+    <button onclick="stealCows()">Steal Cows</button>
+    <button onclick="tendCows()">Tend Cows (Milk)</button>
+    <button onclick="slaughterCows()">Slaughter Cows (Meat)</button>
+    <button onclick="rest()">Rest</button>
+
+    <p id="message"></p>
+</div>
+
+<script src="game.js"></script>
+
+</body>
+</html>
