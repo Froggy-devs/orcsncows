@@ -10,54 +10,34 @@
             background-color: #333;
             color: #fff;
             text-align: center;
-            padding: 20px;
-        }
-        #game-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #444;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 10px;
-        }
-        .resource {
-            font-size: 18px;
         }
     </style>
 </head>
 <body>
+    <h1>Orc Tribe Management</h1>
 
-<div id="game-container">
-    <h1>Orc Tribe Management Game</h1>
+    <div id="stats">
+        <p>Orcs: <span id="orcCount">10</span></p>
+        <p>Cows: <span id="cowCount">0</span></p>
+        <p>Milk: <span id="milkCount">0</span></p>
+        <p>Meat: <span id="meatCount">0</span></p>
+        <p>Week: <span id="weekCount">1</span></p>
+    </div>
 
-    <p>Week: <span id="weekCount">1</span></p>
-    <p class="resource">Orc Count: <span id="orcCount">10</span></p>
-    <p class="resource">Cow Count: <span id="cowCount">0</span></p>
-    <p class="resource">Milk: <span id="milkCount">0</span></p>
-    <p class="resource">Meat: <span id="meatCount">0</span></p>
-
-    <h3>Allocate Orcs for the Week</h3>
-    <form id="orcAllocationForm">
-        <label for="stealOrcs">Orcs for stealing cows:</label>
-        <input type="number" id="stealOrcs" min="0" value="0"><br><br>
-
-        <label for="tendOrcs">Orcs for tending cows:</label>
-        <input type="number" id="tendOrcs" min="0" value="0"><br><br>
-
-        <label for="slaughterOrcs">Orcs for slaughtering cows:</label>
-        <input type="number" id="slaughterOrcs" min="0" value="0"><br><br>
-
-        <button type="button" onclick="passWeek()">Submit Allocations</button>
-    </form>
+    <h2>Allocate Orcs</h2>
+    <p>Steal cows: <input id="stealOrcs" type="number" value="0" min="0"></p>
+    <p>Tend cows: <input id="tendOrcs" type="number" value="0" min="0"></p>
+    <p>Slaughter cows: <input id="slaughterOrcs" type="number" value="0" min="0"></p>
+    
+    <button onclick="passWeek()">Submit Allocations</button>
 
     <p id="message"></p>
-</div>
 
-<script src="game.js"></script>
+    <!-- Placeholder for weekly summary image -->
+    <div id="weeklySummary">
+        <!-- Replace alert popup with an image or custom summary here -->
+    </div>
 
+    <script src="game.js"></script>
 </body>
 </html>
