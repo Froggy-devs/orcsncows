@@ -4,21 +4,25 @@ let milkCount = 0;
 let meatCount = 0;
 let weekCount = 1;
 let orcStrength = 1;  // Strength increases with more meat consumed
-let milkingCooldown = [];  // Array to track milking cooldown for each cow
-let successfulMilkings = [];  // Array to track how many successful milkings each cow has had
+let milkCooldownCows = [];  // Tracks cows currently in cooldown and their remaining cooldown weeks
+let successfulMilkings = [];  // Tracks how many successful milkings each cow has had
 
 function initializeCows(count) {
     for (let i = 0; i < count; i++) {
-        milkingCooldown.push(0);  // Initially, no cooldown
         successfulMilkings.push(0);  // Each cow starts with 0 milkings
     }
 }
 
-// Update cow milking cooldowns every week
+// Update cow milking cooldowns and birth new orcs when cooldown ends
 function updateCowCooldowns() {
-    for (let i = 0; i < cowCount; i++) {
-        if (milkingCooldown[i] > 0) {
-            milkingCooldown[i]--;  // Reduce cooldown for milking
+    for (let i = 0; i < milkCooldownCows.length; i++) {
+        milkCooldownCows[i].weeks--;  // Reduce cooldown for milking
+        if (milkCooldownCows[i].weeks <= 0) {
+            // Cow can now be milked again
+            cowCount++;
+            orcCount++;  // A new orc is born after the cooldown ends
+            milkCooldownCows.splice(i, 1);
+            i--;
         }
     }
 }
@@ -39,25 +43,25 @@ function passWeek() {
     // Stealing cows logic
     let cowsStolen = Math.floor(Math.random() * stealOrcs * orcStrength);
     cowCount += cowsStolen;
-    initializeCows(cowsStolen);  // Initialize any new cows with 0 cooldown and 0 milkings
+    initializeCows(cowsStolen);  // Initialize any new cows with 0 milkings
 
     // Milking logic (chance of success depends on orcs per cow)
     let successfulMilkCount = 0;
     let orcsPerCow = tendOrcs / cowCount;
-    for (let i = 0; i < cowCount; i++) {
-        if (milkingCooldown[i] === 0) {  // Only attempt to milk if no cooldown
-            let milkingChance = Math.min(1, orcsPerCow * 0.3);  // Orcs per cow increase chance
-            if (Math.random() < milkingChance) {
-                successfulMilkCount++;
-                milkingCooldown[i] = 5;  // Start a 5-week cooldown after successful milking
-                successfulMilkings[i]++;
-                if (successfulMilkings[i] >= 5) {
-                    // Cow dies after 5 successful milkings
-                    successfulMilkings.splice(i, 1);
-                    milkingCooldown.splice(i, 1);
-                    cowCount--;
-                    i--;
-                }
+    let milkableCows = cowCount - milkCooldownCows.length;  // Only milk cows that are not on cooldown
+
+    for (let i = 0; i < milkableCows; i++) {
+        let milkingChance = Math.min(1, orcsPerCow * 0.3);  // Orcs per cow increase chance
+        if (Math.random() < milkingChance) {
+            successfulMilkCount++;
+            // Put this cow into the cooldown list
+            milkCooldownCows.push({ weeks: 5 });  // 5-week cooldown
+            cowCount--;  // Remove the cow from milkable cows
+            successfulMilkings[i]++;
+            if (successfulMilkings[i] >= 5) {
+                // Cow dies after 5 successful milkings
+                successfulMilkings.splice(i, 1);
+                i--;
             }
         }
     }
@@ -68,13 +72,10 @@ function passWeek() {
     let meatGained = cowsSlaughtered * (cowsSlaughtered >= 10 ? 2 : 1);  // More meat for older cows
     meatCount += meatGained;
 
-    // Orc reproduction (1 orc per successful milking)
-    orcCount += successfulMilkCount;
-
     // Orc strength increases based on meat gained
     orcStrength += Math.floor(meatGained / 5);
 
-    // Update cow cooldowns
+    // Update cow cooldowns and birth new orcs if applicable
     updateCowCooldowns();
 
     // Update stats display (hide game screen, show summary)
@@ -83,6 +84,7 @@ function passWeek() {
     document.getElementById('milkCount').innerText = milkCount;
     document.getElementById('meatCount').innerText = meatCount;
     document.getElementById('weekCount').innerText = ++weekCount;
+    document.getElementById('cooldownCows').innerText = milkCooldownCows.length;
 
     // Show summary screen for the week
     showWeekSummary(cowsStolen, successfulMilkCount, meatGained, cowsSlaughtered);
