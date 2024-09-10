@@ -4,8 +4,26 @@ let milkCount = 0;
 let meatCount = 0;
 let weekCount = 1;
 let orcStrength = 1;  // Strength increases with more meat consumed
+let milkingCooldown = [];  // Array to track milking cooldown for each cow
+let successfulMilkings = [];  // Array to track how many successful milkings each cow has had
 
-// Weekly actions allocation
+function initializeCows(count) {
+    for (let i = 0; i < count; i++) {
+        milkingCooldown.push(0);  // Initially, no cooldown
+        successfulMilkings.push(0);  // Each cow starts with 0 milkings
+    }
+}
+
+// Update cow milking cooldowns every week
+function updateCowCooldowns() {
+    for (let i = 0; i < cowCount; i++) {
+        if (milkingCooldown[i] > 0) {
+            milkingCooldown[i]--;  // Reduce cooldown for milking
+        }
+    }
+}
+
+// Function to handle passing of a week
 function passWeek() {
     let stealOrcs = parseInt(document.getElementById('stealOrcs').value);
     let tendOrcs = parseInt(document.getElementById('tendOrcs').value);
@@ -18,65 +36,85 @@ function passWeek() {
         return;
     }
 
-    // Weekly cow theft (random based on strength)
+    // Stealing cows logic
     let cowsStolen = Math.floor(Math.random() * stealOrcs * orcStrength);
     cowCount += cowsStolen;
+    initializeCows(cowsStolen);  // Initialize any new cows with 0 cooldown and 0 milkings
 
-    // Milk production and slaughter
-    let milkGained = Math.min(tendOrcs, cowCount);  // Max cows that can be tended
-    milkCount += milkGained;
-    
+    // Milking logic (chance of success depends on orcs per cow)
+    let successfulMilkCount = 0;
+    let orcsPerCow = tendOrcs / cowCount;
+    for (let i = 0; i < cowCount; i++) {
+        if (milkingCooldown[i] === 0) {  // Only attempt to milk if no cooldown
+            let milkingChance = Math.min(1, orcsPerCow * 0.3);  // Orcs per cow increase chance
+            if (Math.random() < milkingChance) {
+                successfulMilkCount++;
+                milkingCooldown[i] = 5;  // Start a 5-week cooldown after successful milking
+                successfulMilkings[i]++;
+                if (successfulMilkings[i] >= 5) {
+                    // Cow dies after 5 successful milkings
+                    successfulMilkings.splice(i, 1);
+                    milkingCooldown.splice(i, 1);
+                    cowCount--;
+                    i--;
+                }
+            }
+        }
+    }
+
+    // Slaughtering cows
     let cowsSlaughtered = Math.min(slaughterOrcs, cowCount);
     cowCount -= cowsSlaughtered;
-    let meatGained = cowsSlaughtered * (cowCount >= 10 ? 2 : 1);  // More meat for older cows
+    let meatGained = cowsSlaughtered * (cowsSlaughtered >= 10 ? 2 : 1);  // More meat for older cows
     meatCount += meatGained;
 
-    // Orc reproduction and strength based on milk and meat
-    let newOrcs = Math.floor(milkGained / 2);  // Every 2 milk produces 1 orc
-    orcCount += newOrcs;
-    orcStrength += Math.floor(meatGained / 5);  // Strength increases with more meat
+    // Orc reproduction (1 orc per successful milking)
+    orcCount += successfulMilkCount;
 
-    // Age cows and check if they die without slaughter
-    let agedOutCows = cowCount >= 10 ? Math.floor(cowCount / 10) : 0;
-    cowCount -= agedOutCows;
+    // Orc strength increases based on meat gained
+    orcStrength += Math.floor(meatGained / 5);
 
-    // Update stats display
+    // Update cow cooldowns
+    updateCowCooldowns();
+
+    // Update stats display (hide game screen, show summary)
     document.getElementById('orcCount').innerText = orcCount;
     document.getElementById('cowCount').innerText = cowCount;
     document.getElementById('milkCount').innerText = milkCount;
     document.getElementById('meatCount').innerText = meatCount;
     document.getElementById('weekCount').innerText = ++weekCount;
 
-    // Show summary for the week
-    showWeekSummary(cowsStolen, milkGained, meatGained, newOrcs, agedOutCows);
+    // Show summary screen for the week
+    showWeekSummary(cowsStolen, successfulMilkCount, meatGained, cowsSlaughtered);
 }
 
-// Display image and summary based on what happened during the week
-function showWeekSummary(cowsStolen, milkGained, meatGained, newOrcs, agedOutCows) {
-    let message = `Week ${weekCount} Summary:\n`;
-    message += `Cows stolen: ${cowsStolen}\n`;
-    message += `Milk gained: ${milkGained}\n`;
-    message += `Meat gained: ${meatGained}\n`;
-    message += `New orcs born: ${newOrcs}\n`;
-    message += `Cows died of old age: ${agedOutCows}`;
-    
-    document.getElementById('message').innerText = message;
+// Display image and summary screen between weeks
+function showWeekSummary(cowsStolen, successfulMilkCount, meatGained, cowsSlaughtered) {
+    let summaryText = `Week ${weekCount} Summary:\n`;
+    summaryText += `Cows stolen: ${cowsStolen}\n`;
+    summaryText += `Successful milkings: ${successfulMilkCount}\n`;
+    summaryText += `Meat gained: ${meatGained}\n`;
+    summaryText += `Cows slaughtered: ${cowsSlaughtered}`;
 
-    // Show appropriate image based on events
+    document.getElementById('summaryText').innerText = summaryText;
+
+    // Display the correct image based on results
     let summaryImage = document.getElementById('summaryImage');
     
-    // If cows are stolen, show the orc image
     if (cowsStolen > 0) {
-        summaryImage.src = "images/orc.jpg";
-        summaryImage.style.display = "block";
+        summaryImage.src = "images/orc.jpg";  // Show orc image if cows were stolen
+    } else if (successfulMilkCount > 0) {
+        summaryImage.src = "images/elf.jpeg";  // Show elf image if successful milking
     }
-    // If more milk gained, show the elf image (arbitrary event, replace if needed)
-    else if (milkGained > 0) {
-        summaryImage.src = "images/elf.jpeg";
-        summaryImage.style.display = "block";
-    }
-    else {
-        // Hide image if nothing major happened
-        summaryImage.style.display = "none";
-    }
+
+    // Hide game screen, show summary screen
+    document.getElementById('gameScreen').style.display = "none";
+    document.getElementById('summaryScreen').style.display = "block";
+}
+
+// Function to continue to the next week after showing the summary
+function continueGame() {
+    document.getElementById('summaryScreen').style.display = "none";
+    document.getElementById('gameScreen').style.display = "block";
+    document.getElementById('message').innerText = "";  // Clear the message
 }
