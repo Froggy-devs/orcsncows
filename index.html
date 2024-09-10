@@ -20,37 +20,47 @@
             width: 300px;
             height: auto;
         }
-        #summaryImage {
+        #summaryScreen {
             display: none;
+        }
+        #gameScreen {
+            display: block;
         }
     </style>
 </head>
 <body>
     <h1>Orc Tribe Management</h1>
 
-    <div id="stats">
-        <p>Orcs: <span id="orcCount">10</span></p>
-        <p>Cows: <span id="cowCount">0</span></p>
-        <p>Milk: <span id="milkCount">0</span></p>
-        <p>Meat: <span id="meatCount">0</span></p>
-        <p>Week: <span id="weekCount">1</span></p>
+    <!-- Game Screen for Orc Allocation and Stats -->
+    <div id="gameScreen">
+        <div id="stats">
+            <p>Orcs: <span id="orcCount">10</span></p>
+            <p>Cows: <span id="cowCount">0</span></p>
+            <p>Milk: <span id="milkCount">0</span></p>
+            <p>Meat: <span id="meatCount">0</span></p>
+            <p>Week: <span id="weekCount">1</span></p>
+        </div>
+
+        <h2>Allocate Orcs</h2>
+        <div id="allocations">
+            <p>Steal cows: <input id="stealOrcs" type="number" value="0" min="0"></p>
+            <p>Tend cows: <input id="tendOrcs" type="number" value="0" min="0"></p>
+            <p>Slaughter cows: <input id="slaughterOrcs" type="number" value="0" min="0"></p>
+        </div>
+        
+        <button onclick="passWeek()">Submit Allocations</button>
+
+        <p id="message"></p>
     </div>
 
-    <h2>Allocate Orcs</h2>
-    <div id="allocations">
-        <p>Steal cows: <input id="stealOrcs" type="number" value="0" min="0"></p>
-        <p>Tend cows: <input id="tendOrcs" type="number" value="0" min="0"></p>
-        <p>Slaughter cows: <input id="slaughterOrcs" type="number" value="0" min="0"></p>
+    <!-- Summary Screen for Weekly Results -->
+    <div id="summaryScreen">
+        <p id="summaryText"></p>
+        <img id="summaryImage" src="" alt="Weekly Summary" />
+        <br/>
+        <button onclick="continueGame()">Continue to Next Week</button>
     </div>
-    
-    <button onclick="passWeek()">Submit Allocations</button>
-
-    <p id="message"></p>
-
-    <!-- Image display for weekly summary -->
-    <img id="summaryImage" src="" alt="Weekly Summary" />
 
     <script src="game.js"></script>
 </body>
 </html>
-
