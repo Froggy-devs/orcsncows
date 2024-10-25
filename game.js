@@ -117,4 +117,22 @@ function showActivitySummaries(activitySummaries) {
 
         const { text, img } = activitySummaries[currentActivityIndex++];
         document.getElementById('summaryText').innerText = text;
-        
+        document.getElementById('activityImage').src = img;
+    }
+
+    document.getElementById('gameScreen').style.display = 'none';
+    document.getElementById('summaryScreen').style.display = 'block';
+    displayNextActivity();
+
+    document.getElementById('nextActivityButton').onclick = displayNextActivity;
+}
+
+// Continue to the next week, reset selections, and show the main screen
+function continueGame() {
+    document.getElementById('summaryScreen').style.display = 'none';
+    document.getElementById('gameScreen').style.display = 'block';
+    resetSelections();
+}
+
+// Initialize images visibility
+updateActivityImages();
