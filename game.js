@@ -7,32 +7,29 @@ let orcStrength = 1;
 let milkCooldownCows = [];
 let successfulMilkings = [];
 
-// Initializes cow data with milk count for new cows
 function initializeCows(count) {
     for (let i = 0; i < count; i++) {
         successfulMilkings.push(0);
     }
 }
 
-// Updates activity images dynamically based on current allocations
+// Updates activity images based on allocations
 function updateActivityImages() {
     let stealOrcs = parseInt(document.getElementById('stealOrcs').value) || 0;
     let tendOrcs = parseInt(document.getElementById('tendOrcs').value) || 0;
     let slaughterOrcs = parseInt(document.getElementById('slaughterOrcs').value) || 0;
     let totalAllocatedOrcs = stealOrcs + tendOrcs + slaughterOrcs;
-    let unassignedOrcs = orcCount - totalAllocatedOrcs;
 
-    // Display relevant activity images based on allocations
     document.getElementById('stealingOrcsImg').style.display = stealOrcs > 0 ? "inline-block" : "none";
     document.getElementById('milkingOrcsImg').style.display = tendOrcs > 0 ? "inline-block" : "none";
     document.getElementById('slaughteringOrcsImg').style.display = slaughterOrcs > 0 ? "inline-block" : "none";
-    document.getElementById('relaxingOrcsImg').style.display = unassignedOrcs > 0 ? "inline-block" : "none";
+    document.getElementById('relaxingOrcsImg').style.display = (orcCount - totalAllocatedOrcs) > 0 ? "inline-block" : "none";
 
-    // Check if allocations exceed available orcs and show/hide error message accordingly
-    document.getElementById('message').innerText = (totalAllocatedOrcs > orcCount) ? "You don't have enough orcs!" : "";
+    // Show error message if allocations exceed available orcs, otherwise clear
+    document.getElementById('message').innerText = totalAllocatedOrcs > orcCount ? "You don't have enough orcs!" : "";
 }
 
-// Reset all allocations at the beginning of a new week
+// Reset allocations and activity images at the start of each new week
 function resetAllocations() {
     document.getElementById('stealOrcs').value = 0;
     document.getElementById('tendOrcs').value = 0;
@@ -40,7 +37,7 @@ function resetAllocations() {
     updateActivityImages();
 }
 
-// Update cow cooldowns, process births, and add new orcs
+// Update cow cooldowns and process births
 function updateCowCooldowns() {
     for (let i = 0; i < milkCooldownCows.length; i++) {
         milkCooldownCows[i].weeks--;
@@ -53,7 +50,7 @@ function updateCowCooldowns() {
     }
 }
 
-// Passes the week, processes allocations, and calculates outcomes for each activity
+// Process each week's activities and then display the summary screens sequentially
 function passWeek() {
     let stealOrcs = parseInt(document.getElementById('stealOrcs').value);
     let tendOrcs = parseInt(document.getElementById('tendOrcs').value);
@@ -103,42 +100,42 @@ function passWeek() {
     document.getElementById('weekCount').innerText = ++weekCount;
     document.getElementById('cooldownCows').innerText = milkCooldownCows.length;
 
-    showWeekSummary(cowsStolen, successfulMilkCount, meatGained, cowsSlaughtered);
+    showActivitySummaries([
+        { text: `Orcs stole ${cowsStolen} cows.`, img: 'images/stealing.jpg', condition: stealOrcs > 0 },
+        { text: `Orcs successfully milked ${successfulMilkCount} cows.`, img: 'images/milking.jpg', condition: tendOrcs > 0 },
+        { text: `Orcs gained ${meatGained} meat from slaughtering ${cowsSlaughtered} cows.`, img: 'images/slaughtering.jpg', condition: slaughterOrcs > 0 }
+    ]);
 }
 
-// Show summary screen for each activity outcome
-function showWeekSummary(cowsStolen, successfulMilkCount, meatGained, cowsSlaughtered) {
-    let activityScreens = [
-        { text: `Orcs stole ${cowsStolen} cows.`, img: 'images/stealing.jpg' },
-        { text: `Orcs successfully milked ${successfulMilkCount} cows.`, img: 'images/milking.jpg' },
-        { text: `Orcs gained ${meatGained} meat from slaughtering ${cowsSlaughtered} cows.`, img: 'images/slaughtering.jpg' },
-        { text: `Some orcs relaxed in the camp.`, img: 'images/relaxing.jpg', condition: orcCount - totalOrcsAllocated > 0 }
-    ];
+// Show activity summaries sequentially, only for activities that were actually performed
+function showActivitySummaries(activitySummaries) {
+    // Filter only those activities that were assigned orcs
+    activitySummaries = activitySummaries.filter(activity => activity.condition);
 
-    let summaryText = `Week ${weekCount} Summary:\n`;
-
-    activityScreens = activityScreens.filter(screen => !screen.condition || screen.condition);
     let currentActivityIndex = 0;
 
-    function nextActivityScreen() {
-        if (currentActivityIndex >= activityScreens.length) {
+    function displayNextActivity() {
+        if (currentActivityIndex >= activitySummaries.length) {
             continueGame();
             return;
         }
 
-        const { text, img } = activityScreens[currentActivityIndex++];
+        const { text, img } = activitySummaries[currentActivityIndex++];
         document.getElementById('summaryText').innerText = text;
         document.getElementById('activityImage').src = img;
     }
 
-    document.getElementById('summaryScreen').style.display = 'block';
     document.getElementById('gameScreen').style.display = 'none';
-    nextActivityScreen();
+    document.getElementById('summaryScreen').style.display = 'block';
+    displayNextActivity();
+
+    document.getElementById('nextActivityButton').onclick = displayNextActivity;
 }
 
-// Proceeds to next activity or week
+// Continue to the next week, reset allocations, and show the main screen
 function continueGame() {
     document.getElementById('summaryScreen').style.display = 'none';
     document.getElementById('gameScreen').style.display = 'block';
     resetAllocations();
 }
+
