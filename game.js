@@ -41,7 +41,7 @@ function updateCowCooldowns() {
         milkCooldownCows[i].weeks--;
         if (milkCooldownCows[i].weeks <= 0) {
             cowCount++;
-            orcCount++;
+            orcCount++; // New orc born
             milkCooldownCows.splice(i, 1);
             i--;
         }
@@ -57,13 +57,16 @@ function passWeek() {
 
     // Use all available orcs for the chosen activity
     let allocatedOrcs = orcCount;
+    let summaryText = `Week ${weekCount} Summary:\n`;
 
     if (currentActivity === "steal") {
         // Steal cows
         let cowsStolen = Math.floor(Math.random() * allocatedOrcs * orcStrength);
         cowCount += cowsStolen;
         initializeCows(cowsStolen);
-        showActivitySummaries([{ text: `Orcs stole ${cowsStolen} cows.`, img: 'images/stealing.jpg' }]);
+        
+        summaryText += `- ${allocatedOrcs} orcs went out to steal cows.\n`;
+        summaryText += `- Orcs successfully stole ${cowsStolen} cows.\n`;
 
     } else if (currentActivity === "tend") {
         // Handle milking
@@ -82,9 +85,11 @@ function passWeek() {
                     cowCount--;
                 }
             }
-            showActivitySummaries([{ text: `Orcs successfully milked ${successfulMilkCount} cows.`, img: 'images/milking.jpg' }]);
+            summaryText += `- ${allocatedOrcs} orcs tended to cows.\n`;
+            summaryText += `- Orcs successfully milked ${successfulMilkCount} cows.\n`;
+            summaryText += `- ${successfulMilkCount} cows are now in cooldown.\n`;
         } else {
-            showActivitySummaries([{ text: `No cows available for milking.`, img: 'images/milking.jpg' }]);
+            summaryText += `- ${allocatedOrcs} orcs tried to milk, but no cows were available.\n`;
         }
 
     } else if (currentActivity === "slaughter") {
@@ -95,10 +100,17 @@ function passWeek() {
         meatCount += meatGained;
         orcStrength += Math.floor(meatGained / 5);
 
-        showActivitySummaries([{ text: `Orcs gained ${meatGained} meat from slaughtering ${cowsSlaughtered} cows.`, img: 'images/slaughtering.jpg' }]);
+        summaryText += `- ${allocatedOrcs} orcs slaughtered cows.\n`;
+        summaryText += `- Orcs slaughtered ${cowsSlaughtered} cows and gained ${meatGained} meat.\n`;
     }
 
     updateCowCooldowns();
+
+    // Show cows leaving cooldown
+    let cowsLeavingCooldown = milkCooldownCows.length > 0 ? milkCooldownCows.filter(cow => cow.weeks <= 0).length : 0;
+    summaryText += `- ${cowsLeavingCooldown} cows have left cooldown.\n`;
+    summaryText += `- Current number of cows: ${cowCount}\n`;
+    summaryText += `- Current number of orcs: ${orcCount}\n`;
 
     // Update the UI
     document.getElementById('orcCount').innerText = orcCount;
@@ -108,6 +120,9 @@ function passWeek() {
     document.getElementById('weekCount').innerText = ++weekCount;
     document.getElementById('cooldownCows').innerText = milkCooldownCows.length;
 
+    // Show the detailed summary
+    showActivitySummaries([{ text: summaryText, img: 'images/summary.jpg' }]);
+    
     // Reset selections for the next week
     resetSelections();
 }
