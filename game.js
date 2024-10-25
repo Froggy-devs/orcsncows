@@ -7,6 +7,7 @@ let orcStrength = 1;
 let milkCooldownCows = [];
 let successfulMilkings = [];
 
+// Function to initialize cows
 function initializeCows(count) {
     for (let i = 0; i < count; i++) {
         successfulMilkings.push(0);
@@ -25,11 +26,11 @@ function updateActivityImages() {
     document.getElementById('slaughteringOrcsImg').style.display = slaughterOrcs > 0 ? "inline-block" : "none";
     document.getElementById('relaxingOrcsImg').style.display = (orcCount - totalAllocatedOrcs) > 0 ? "inline-block" : "none";
 
-    // Show error message if allocations exceed available orcs, otherwise clear
+    // Show or clear error message based on allocation
     document.getElementById('message').innerText = totalAllocatedOrcs > orcCount ? "You don't have enough orcs!" : "";
 }
 
-// Reset allocations and activity images at the start of each new week
+// Resets allocations to zero at the start of a new week
 function resetAllocations() {
     document.getElementById('stealOrcs').value = 0;
     document.getElementById('tendOrcs').value = 0;
@@ -37,7 +38,7 @@ function resetAllocations() {
     updateActivityImages();
 }
 
-// Update cow cooldowns and process births
+// Process cooldown for milked cows and handle births
 function updateCowCooldowns() {
     for (let i = 0; i < milkCooldownCows.length; i++) {
         milkCooldownCows[i].weeks--;
@@ -50,7 +51,7 @@ function updateCowCooldowns() {
     }
 }
 
-// Process each week's activities and then display the summary screens sequentially
+// Main function to pass the week and initiate activities
 function passWeek() {
     let stealOrcs = parseInt(document.getElementById('stealOrcs').value);
     let tendOrcs = parseInt(document.getElementById('tendOrcs').value);
@@ -62,6 +63,7 @@ function passWeek() {
         return;
     }
 
+    // Process allocations and generate activity summaries
     let cowsStolen = Math.floor(Math.random() * stealOrcs * orcStrength);
     cowCount += cowsStolen;
     initializeCows(cowsStolen);
@@ -107,9 +109,8 @@ function passWeek() {
     ]);
 }
 
-// Show activity summaries sequentially, only for activities that were actually performed
+// Displays each activity summary screen one at a time
 function showActivitySummaries(activitySummaries) {
-    // Filter only those activities that were assigned orcs
     activitySummaries = activitySummaries.filter(activity => activity.condition);
 
     let currentActivityIndex = 0;
@@ -138,5 +139,3 @@ function continueGame() {
     document.getElementById('gameScreen').style.display = 'block';
     resetAllocations();
 }
-
-
