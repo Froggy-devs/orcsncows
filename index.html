@@ -5,37 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orc Tribe Management</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #282c34;
-            color: white;
-            text-align: center;
-        }
-        #stats, #allocations {
-            margin: 20px;
-        }
-        img {
-            margin-top: 10px;
-            border: 2px solid white;
-            width: 150px;
-            height: auto;
-            display: inline-block;
-        }
-        #activityImages img {
-            margin: 5px;
-        }
-        #summaryScreen {
-            display: none;
-        }
-        #gameScreen {
-            display: block;
-        }
+        body { font-family: Arial, sans-serif; background-color: #282c34; color: white; text-align: center; }
+        #stats, #allocations { margin: 20px; }
+        img { margin-top: 10px; border: 2px solid white; width: 150px; height: auto; display: inline-block; }
+        #activityImages img { margin: 5px; }
+        #summaryScreen { display: none; }
+        #gameScreen { display: block; }
     </style>
 </head>
 <body>
     <h1>Orc Tribe Management</h1>
 
-    <!-- Game Screen for Orc Allocation and Stats -->
     <div id="gameScreen">
         <div id="stats">
             <p>Orcs: <span id="orcCount">10</span></p>
@@ -46,7 +26,6 @@
             <p>Week: <span id="weekCount">1</span></p>
         </div>
 
-        <!-- Orc Allocation Section -->
         <h2>Allocate Orcs</h2>
         <div id="allocations">
             <p>Steal cows: <input id="stealOrcs" type="number" value="0" min="0" oninput="updateActivityImages()"></p>
@@ -54,7 +33,6 @@
             <p>Slaughter cows: <input id="slaughterOrcs" type="number" value="0" min="0" oninput="updateActivityImages()"></p>
         </div>
 
-        <!-- Activity Images -->
         <div id="activityImages">
             <img id="relaxingOrcsImg" src="images/relaxing.jpg" alt="Relaxing Orcs" style="display: none;">
             <img id="stealingOrcsImg" src="images/stealing.jpg" alt="Orcs Stealing Cows" style="display: none;">
@@ -66,12 +44,11 @@
         <p id="message"></p>
     </div>
 
-    <!-- Summary Screen for Weekly Results -->
     <div id="summaryScreen">
         <p id="summaryText"></p>
-        <img id="summaryImage" src="" alt="Weekly Summary" />
+        <img id="activityImage" src="" alt="Activity Summary" />
         <br/>
-        <button onclick="continueGame()">Continue to Next Week</button>
+        <button onclick="continueGame()">Next Activity</button>
     </div>
 
     <script src="game.js"></script>
