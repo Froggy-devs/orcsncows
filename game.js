@@ -6,6 +6,7 @@ let weekCount = 1;
 let orcStrength = 1;
 let milkCooldownCows = [];
 let successfulMilkings = [];
+let currentActivity = ""; // Variable to hold the current activity
 
 // Function to initialize cows
 function initializeCows(count) {
@@ -14,21 +15,24 @@ function initializeCows(count) {
     }
 }
 
-// Updates activity images based on selected activity
-function updateActivityImages() {
-    let activity = document.getElementById('activitySelect').value;
+// Function to set the current activity based on button click
+function setActivity(activity) {
+    currentActivity = activity; // Update the current activity
+    updateActivityImages(); // Update the images based on the activity
+}
 
+// Updates activity images based on the current activity
+function updateActivityImages() {
     // Show or hide images based on selected activity
-    document.getElementById('stealingOrcsImg').style.display = activity === "steal" ? "inline-block" : "none";
-    document.getElementById('milkingOrcsImg').style.display = activity === "tend" ? "inline-block" : "none";
-    document.getElementById('slaughteringOrcsImg').style.display = activity === "slaughter" ? "inline-block" : "none";
-    document.getElementById('relaxingOrcsImg').style.display = (orcCount > 0) ? "inline-block" : "none";
+    document.getElementById('stealingOrcsImg').style.display = currentActivity === "steal" ? "inline-block" : "none";
+    document.getElementById('milkingOrcsImg').style.display = currentActivity === "tend" ? "inline-block" : "none";
+    document.getElementById('slaughteringOrcsImg').style.display = currentActivity === "slaughter" ? "inline-block" : "none";
 }
 
 // Resets selections at the start of a new week
 function resetSelections() {
-    document.getElementById('activitySelect').selectedIndex = 0;
-    updateActivityImages();
+    currentActivity = ""; // Clear the current activity
+    updateActivityImages(); // Clear images
 }
 
 // Process cooldown for milked cows and handle births
@@ -46,19 +50,22 @@ function updateCowCooldowns() {
 
 // Main function to pass the week and initiate activities
 function passWeek() {
-    let activity = document.getElementById('activitySelect').value;
+    if (!currentActivity) {
+        document.getElementById('message').innerText = "Please select an activity!";
+        return;
+    }
 
     // Use all available orcs for the chosen activity
     let allocatedOrcs = orcCount;
 
-    if (activity === "steal") {
+    if (currentActivity === "steal") {
         // Steal cows
         let cowsStolen = Math.floor(Math.random() * allocatedOrcs * orcStrength);
         cowCount += cowsStolen;
         initializeCows(cowsStolen);
         showActivitySummaries([{ text: `Orcs stole ${cowsStolen} cows.`, img: 'images/stealing.jpg' }]);
 
-    } else if (activity === "tend") {
+    } else if (currentActivity === "tend") {
         // Handle milking
         let successfulMilkCount = 0;
         let milkableCows = cowCount - milkCooldownCows.length;
@@ -80,7 +87,7 @@ function passWeek() {
             showActivitySummaries([{ text: `No cows available for milking.`, img: 'images/milking.jpg' }]);
         }
 
-    } else if (activity === "slaughter") {
+    } else if (currentActivity === "slaughter") {
         // Handle slaughtering
         let cowsSlaughtered = Math.min(allocatedOrcs, cowCount);
         cowCount -= cowsSlaughtered;
@@ -93,7 +100,7 @@ function passWeek() {
 
     updateCowCooldowns();
 
-    // Update the UI as before
+    // Update the UI
     document.getElementById('orcCount').innerText = orcCount;
     document.getElementById('cowCount').innerText = cowCount;
     document.getElementById('milkCount').innerText = milkCount;
@@ -131,8 +138,4 @@ function showActivitySummaries(activitySummaries) {
 function continueGame() {
     document.getElementById('summaryScreen').style.display = 'none';
     document.getElementById('gameScreen').style.display = 'block';
-    resetSelections();
 }
-
-// Initialize images visibility
-updateActivityImages();
