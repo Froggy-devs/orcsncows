@@ -53,21 +53,17 @@ function updateCowCooldowns() {
 
 // Main function to pass the week and initiate activities
 function passWeek() {
-    let stealOrcs = parseInt(document.getElementById('stealOrcs').value);
+    // All orcs are used, so we don't need to check allocations anymore.
+    let stealOrcs = 1; // All orcs go stealing
     let tendOrcs = parseInt(document.getElementById('tendOrcs').value);
     let slaughterOrcs = parseInt(document.getElementById('slaughterOrcs').value);
-    let totalOrcsAllocated = stealOrcs + tendOrcs + slaughterOrcs;
-
-    if (totalOrcsAllocated > orcCount) {
-        document.getElementById('message').innerText = "You don't have enough orcs!";
-        return;
-    }
-
-    // Process allocations and generate activity summaries
-    let cowsStolen = Math.floor(Math.random() * stealOrcs * orcStrength);
+    
+    // Update the counts based on focus
+    let cowsStolen = Math.floor(Math.random() * orcCount * orcStrength);
     cowCount += cowsStolen;
     initializeCows(cowsStolen);
 
+    // Handle milking
     let successfulMilkCount = 0;
     let orcsPerCow = tendOrcs / cowCount;
     let milkableCows = cowCount - milkCooldownCows.length;
@@ -86,6 +82,7 @@ function passWeek() {
         }
     }
 
+    // Handle slaughtering
     let cowsSlaughtered = Math.min(slaughterOrcs, cowCount);
     cowCount -= cowsSlaughtered;
     let meatGained = cowsSlaughtered * (cowsSlaughtered >= 10 ? 2 : 1);
@@ -94,7 +91,8 @@ function passWeek() {
     orcStrength += Math.floor(meatGained / 5);
 
     updateCowCooldowns();
-
+    
+    // Update the UI as before
     document.getElementById('orcCount').innerText = orcCount;
     document.getElementById('cowCount').innerText = cowCount;
     document.getElementById('milkCount').innerText = milkCount;
@@ -108,6 +106,7 @@ function passWeek() {
         { text: `Orcs gained ${meatGained} meat from slaughtering ${cowsSlaughtered} cows.`, img: 'images/slaughtering.jpg', condition: slaughterOrcs > 0 }
     ]);
 }
+
 
 // Displays each activity summary screen one at a time
 function showActivitySummaries(activitySummaries) {
