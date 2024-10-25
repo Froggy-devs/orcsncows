@@ -14,22 +14,20 @@ function initializeCows(count) {
     }
 }
 
-// Updates activity images based on allocations
+// Updates activity images based on selected activity
 function updateActivityImages() {
-    let allocatedOrcs = parseInt(document.getElementById('orcInput').value) || 0;
+    let activity = document.getElementById('activitySelect').value;
 
-    document.getElementById('stealingOrcsImg').style.display = "none";
-    document.getElementById('milkingOrcsImg').style.display = "none";
-    document.getElementById('slaughteringOrcsImg').style.display = "none";
-    document.getElementById('relaxingOrcsImg').style.display = (orcCount - allocatedOrcs) > 0 ? "inline-block" : "none";
-
-    // Show or clear error message based on allocation
-    document.getElementById('message').innerText = allocatedOrcs > orcCount ? "You don't have enough orcs!" : "";
+    // Show or hide images based on selected activity
+    document.getElementById('stealingOrcsImg').style.display = activity === "steal" ? "inline-block" : "none";
+    document.getElementById('milkingOrcsImg').style.display = activity === "tend" ? "inline-block" : "none";
+    document.getElementById('slaughteringOrcsImg').style.display = activity === "slaughter" ? "inline-block" : "none";
+    document.getElementById('relaxingOrcsImg').style.display = (orcCount > 0) ? "inline-block" : "none";
 }
 
-// Resets allocations to zero at the start of a new week
-function resetAllocations() {
-    document.getElementById('orcInput').value = 0;
+// Resets selections at the start of a new week
+function resetSelections() {
+    document.getElementById('activitySelect').selectedIndex = 0;
     updateActivityImages();
 }
 
@@ -48,13 +46,10 @@ function updateCowCooldowns() {
 
 // Main function to pass the week and initiate activities
 function passWeek() {
-    let allocatedOrcs = parseInt(document.getElementById('orcInput').value) || 0;
     let activity = document.getElementById('activitySelect').value;
 
-    if (allocatedOrcs > orcCount) {
-        document.getElementById('message').innerText = "You don't have enough orcs!";
-        return;
-    }
+    // Use all available orcs for the chosen activity
+    let allocatedOrcs = orcCount;
 
     if (activity === "steal") {
         // Steal cows
@@ -68,18 +63,22 @@ function passWeek() {
         let successfulMilkCount = 0;
         let milkableCows = cowCount - milkCooldownCows.length;
 
-        let orcsPerCow = allocatedOrcs / milkableCows;
-        for (let i = 0; i < milkableCows; i++) {
-            let milkingChance = Math.min(1, orcsPerCow * 0.3);
-            if (Math.random() < milkingChance) {
-                successfulMilkCount++;
-                milkCooldownCows.push({ weeks: 5 });
-                cowCount--;
-                successfulMilkings[i]++;
-            }
-        }
+        // If there are cows to milk, proceed with the milking
+        if (milkableCows > 0) {
+            let orcsPerCow = allocatedOrcs / milkableCows;
 
-        showActivitySummaries([{ text: `Orcs successfully milked ${successfulMilkCount} cows.`, img: 'images/milking.jpg' }]);
+            for (let i = 0; i < milkableCows; i++) {
+                let milkingChance = Math.min(1, orcsPerCow * 0.3);
+                if (Math.random() < milkingChance) {
+                    successfulMilkCount++;
+                    milkCooldownCows.push({ weeks: 5 });
+                    cowCount--;
+                }
+            }
+            showActivitySummaries([{ text: `Orcs successfully milked ${successfulMilkCount} cows.`, img: 'images/milking.jpg' }]);
+        } else {
+            showActivitySummaries([{ text: `No cows available for milking.`, img: 'images/milking.jpg' }]);
+        }
 
     } else if (activity === "slaughter") {
         // Handle slaughtering
@@ -102,8 +101,8 @@ function passWeek() {
     document.getElementById('weekCount').innerText = ++weekCount;
     document.getElementById('cooldownCows').innerText = milkCooldownCows.length;
 
-    // Reset allocations for the next week
-    resetAllocations();
+    // Reset selections for the next week
+    resetSelections();
 }
 
 // Displays each activity summary screen one at a time
@@ -118,25 +117,4 @@ function showActivitySummaries(activitySummaries) {
 
         const { text, img } = activitySummaries[currentActivityIndex++];
         document.getElementById('summaryText').innerText = text;
-        document.getElementById('activityImage').src = img;
-    }
-
-    document.getElementById('gameScreen').style.display = 'none';
-    document.getElementById('summaryScreen').style.display = 'block';
-    displayNextActivity();
-
-    document.getElementById('nextActivityButton').onclick = displayNextActivity;
-}
-
-// Continue to the next week, reset allocations, and show the main screen
-function continueGame() {
-    document.getElementById('summaryScreen').style.display = 'none';
-    document.getElementById('gameScreen').style.display = 'block';
-    resetAllocations();
-}
-
-function updateActivityFields() {
-    // When the activity changes, reset the orc input to zero
-    document.getElementById('orcInput').value = 0;
-    updateActivityImages();
-}
+        
