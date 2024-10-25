@@ -6,11 +6,13 @@
     <title>Orc Tribe Management</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #282c34; color: white; text-align: center; }
-        #stats, #allocations { margin: 20px; }
+        #stats { margin: 20px; }
         img { margin-top: 10px; border: 2px solid white; width: 150px; height: auto; display: inline-block; }
-        #activityImages img { margin: 5px; }
+        #activityImages img { margin: 5px; display: none; }
         #summaryScreen { display: none; }
         #gameScreen { display: block; }
+        .activityButton { margin: 5px; padding: 10px; font-size: 16px; cursor: pointer; background-color: #61dafb; border: none; border-radius: 5px; }
+        .activityButton:hover { background-color: #21a1f1; }
     </style>
 </head>
 <body>
@@ -28,18 +30,12 @@
 
         <h2>Choose Activity</h2>
         <div id="allocations">
-            <p>
-                Select activity:
-                <select id="activitySelect" onchange="updateActivityImages()">
-                    <option value="steal">Steal cows</option>
-                    <option value="tend">Tend cows</option>
-                    <option value="slaughter">Slaughter cows</option>
-                </select>
-            </p>
+            <button class="activityButton" onclick="setActivity('steal')">Steal Cows</button>
+            <button class="activityButton" onclick="setActivity('tend')">Tend Cows</button>
+            <button class="activityButton" onclick="setActivity('slaughter')">Slaughter Cows</button>
         </div>
 
         <div id="activityImages">
-            <img id="relaxingOrcsImg" src="images/relaxing.jpg" alt="Relaxing Orcs" style="display: none;">
             <img id="stealingOrcsImg" src="images/stealing.jpg" alt="Orcs Stealing Cows" style="display: none;">
             <img id="milkingOrcsImg" src="images/milking.jpg" alt="Orcs Milking Cows" style="display: none;">
             <img id="slaughteringOrcsImg" src="images/slaughtering.jpg" alt="Orcs Slaughtering Cows" style="display: none;">
