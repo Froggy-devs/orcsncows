@@ -6,7 +6,7 @@ let weekCount = 1;
 let orcStrength = 1;
 let milkCooldownCows = [];
 let successfulMilkings = [];
-let currentActivity = ""; // Variable to hold the current activity
+let currentActivity = "";
 
 // Function to initialize cows
 function initializeCows(count) {
@@ -17,13 +17,12 @@ function initializeCows(count) {
 
 // Function to set the current activity based on button click
 function setActivity(activity) {
-    currentActivity = activity; // Update the current activity
-    updateActivityImages(); // Update the images based on the activity
+    currentActivity = activity;
+    updateActivityImages();
 }
 
 // Updates activity images based on the current activity
 function updateActivityImages() {
-    // Show or hide images based on selected activity
     document.getElementById('stealingOrcsImg').style.display = currentActivity === "steal" ? "inline-block" : "none";
     document.getElementById('milkingOrcsImg').style.display = currentActivity === "tend" ? "inline-block" : "none";
     document.getElementById('slaughteringOrcsImg').style.display = currentActivity === "slaughter" ? "inline-block" : "none";
@@ -31,21 +30,25 @@ function updateActivityImages() {
 
 // Resets selections at the start of a new week
 function resetSelections() {
-    currentActivity = ""; // Clear the current activity
-    updateActivityImages(); // Clear images
+    currentActivity = "";
+    updateActivityImages();
 }
 
 // Process cooldown for milked cows and handle births
 function updateCowCooldowns() {
+    let cowsExitingCooldown = 0;
+
     for (let i = 0; i < milkCooldownCows.length; i++) {
         milkCooldownCows[i].weeks--;
         if (milkCooldownCows[i].weeks <= 0) {
             cowCount++;
-            orcCount++; // New orc born
+            orcCount++;
             milkCooldownCows.splice(i, 1);
+            cowsExitingCooldown++;
             i--;
         }
     }
+    return cowsExitingCooldown;
 }
 
 // Main function to pass the week and initiate activities
@@ -55,7 +58,6 @@ function passWeek() {
         return;
     }
 
-    // Use all available orcs for the chosen activity
     let allocatedOrcs = orcCount;
     let summaryText = `Week ${weekCount} Summary:\n`;
 
@@ -64,7 +66,7 @@ function passWeek() {
         let cowsStolen = Math.floor(Math.random() * allocatedOrcs * orcStrength);
         cowCount += cowsStolen;
         initializeCows(cowsStolen);
-        
+
         summaryText += `- ${allocatedOrcs} orcs went out to steal cows.\n`;
         summaryText += `- Orcs successfully stole ${cowsStolen} cows.\n`;
 
@@ -73,7 +75,6 @@ function passWeek() {
         let successfulMilkCount = 0;
         let milkableCows = cowCount - milkCooldownCows.length;
 
-        // If there are cows to milk, proceed with the milking
         if (milkableCows > 0) {
             let orcsPerCow = allocatedOrcs / milkableCows;
 
@@ -104,11 +105,13 @@ function passWeek() {
         summaryText += `- Orcs slaughtered ${cowsSlaughtered} cows and gained ${meatGained} meat.\n`;
     }
 
-    updateCowCooldowns();
+    // Update cooldown and track cows leaving cooldown
+    let cowsExitingCooldown = updateCowCooldowns();
+    let cowsInCooldown = milkCooldownCows.length;
 
-    // Show cows leaving cooldown
-    let cowsLeavingCooldown = milkCooldownCows.length > 0 ? milkCooldownCows.filter(cow => cow.weeks <= 0).length : 0;
-    summaryText += `- ${cowsLeavingCooldown} cows have left cooldown.\n`;
+    // Append cooldown details to summary
+    summaryText += `- ${cowsExitingCooldown} cows have left cooldown.\n`;
+    summaryText += `- ${cowsInCooldown} cows are currently in cooldown.\n`;
     summaryText += `- Current number of cows: ${cowCount}\n`;
     summaryText += `- Current number of orcs: ${orcCount}\n`;
 
@@ -118,7 +121,7 @@ function passWeek() {
     document.getElementById('milkCount').innerText = milkCount;
     document.getElementById('meatCount').innerText = meatCount;
     document.getElementById('weekCount').innerText = ++weekCount;
-    document.getElementById('cooldownCows').innerText = milkCooldownCows.length;
+    document.getElementById('cooldownCows').innerText = cowsInCooldown;
 
     // Show the detailed summary
     showActivitySummaries([{ text: summaryText, img: 'images/summary.jpg' }]);
