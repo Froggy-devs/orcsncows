@@ -4,24 +4,24 @@ let milkCount = 0;
 let meatCount = 0;
 let weekCount = 1;
 let orcStrength = 1;
-let milkCooldownCows = [];
+let milkCooldownCows = [];  // Array to track each cow's cooldown time
 let successfulMilkings = [];
 let currentActivity = "";
 
-// Function to initialize cows
+// Function to initialize new cows
 function initializeCows(count) {
     for (let i = 0; i < count; i++) {
         successfulMilkings.push(0);
     }
 }
 
-// Function to set the current activity based on button click
+// Function to set the current activity
 function setActivity(activity) {
     currentActivity = activity;
     updateActivityImages();
 }
 
-// Updates activity images based on the current activity
+// Updates activity images based on the selected activity
 function updateActivityImages() {
     document.getElementById('stealingOrcsImg').style.display = currentActivity === "steal" ? "inline-block" : "none";
     document.getElementById('milkingOrcsImg').style.display = currentActivity === "tend" ? "inline-block" : "none";
@@ -34,10 +34,11 @@ function resetSelections() {
     updateActivityImages();
 }
 
-// Process cooldown for milked cows and handle births
+// Process cooldown for milked cows, returning the count of cows exiting cooldown
 function updateCowCooldowns() {
     let cowsExitingCooldown = 0;
 
+    // Update each cow's cooldown
     for (let i = 0; i < milkCooldownCows.length; i++) {
         milkCooldownCows[i].weeks--;
         if (milkCooldownCows[i].weeks <= 0) {
@@ -60,6 +61,9 @@ function passWeek() {
 
     let allocatedOrcs = orcCount;
     let summaryText = `Week ${weekCount} Summary:\n`;
+
+    // Temporary variable to count cows entering cooldown this week
+    let newCowsInCooldown = 0;
 
     if (currentActivity === "steal") {
         // Steal cows
@@ -84,11 +88,11 @@ function passWeek() {
                     successfulMilkCount++;
                     milkCooldownCows.push({ weeks: 5 });
                     cowCount--;
+                    newCowsInCooldown++;
                 }
             }
             summaryText += `- ${allocatedOrcs} orcs tended to cows.\n`;
             summaryText += `- Orcs successfully milked ${successfulMilkCount} cows.\n`;
-            summaryText += `- ${successfulMilkCount} cows are now in cooldown.\n`;
         } else {
             summaryText += `- ${allocatedOrcs} orcs tried to milk, but no cows were available.\n`;
         }
@@ -105,27 +109,28 @@ function passWeek() {
         summaryText += `- Orcs slaughtered ${cowsSlaughtered} cows and gained ${meatGained} meat.\n`;
     }
 
-    // Update cooldown and track cows leaving cooldown
+    // Update cooldown and calculate the number of cows exiting cooldown
     let cowsExitingCooldown = updateCowCooldowns();
-    let cowsInCooldown = milkCooldownCows.length;
+    let totalCowsInCooldown = milkCooldownCows.length;
 
-    // Append cooldown details to summary
-    summaryText += `- ${cowsExitingCooldown} cows have left cooldown.\n`;
-    summaryText += `- ${cowsInCooldown} cows are currently in cooldown.\n`;
+    // Append detailed cooldown information to the summary
+    summaryText += `- ${newCowsInCooldown} cows entered cooldown this week.\n`;
+    summaryText += `- ${cowsExitingCooldown} cows left cooldown this week.\n`;
+    summaryText += `- ${totalCowsInCooldown} cows are currently in cooldown.\n`;
     summaryText += `- Current number of cows: ${cowCount}\n`;
     summaryText += `- Current number of orcs: ${orcCount}\n`;
 
-    // Update the UI
+    // Update the UI with the latest counts
     document.getElementById('orcCount').innerText = orcCount;
     document.getElementById('cowCount').innerText = cowCount;
     document.getElementById('milkCount').innerText = milkCount;
     document.getElementById('meatCount').innerText = meatCount;
     document.getElementById('weekCount').innerText = ++weekCount;
-    document.getElementById('cooldownCows').innerText = cowsInCooldown;
+    document.getElementById('cooldownCows').innerText = totalCowsInCooldown;
 
-    // Show the detailed summary
+    // Show the weekly summary
     showActivitySummaries([{ text: summaryText, img: 'images/summary.jpg' }]);
-    
+
     // Reset selections for the next week
     resetSelections();
 }
