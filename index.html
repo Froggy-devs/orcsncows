@@ -6,13 +6,12 @@
     <title>Orc Tribe Management</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #282c34; color: white; text-align: center; }
-        #stats { margin: 20px; }
+        #stats, #activities { margin: 20px; }
+        button { margin: 10px; padding: 10px 20px; font-size: 16px; }
         img { margin-top: 10px; border: 2px solid white; width: 150px; height: auto; display: inline-block; }
-        #activityImages img { margin: 5px; display: none; }
+        #activityImages img { margin: 5px; }
         #summaryScreen { display: none; }
         #gameScreen { display: block; }
-        .activityButton { margin: 5px; padding: 10px; font-size: 16px; cursor: pointer; background-color: #61dafb; border: none; border-radius: 5px; }
-        .activityButton:hover { background-color: #21a1f1; }
     </style>
 </head>
 <body>
@@ -21,18 +20,19 @@
     <div id="gameScreen">
         <div id="stats">
             <p>Orcs: <span id="orcCount">10</span></p>
-            <p>Cows: <span id="cowCount">0</span></p>
-            <p>Cows in cooldown: <span id="cooldownCows">0</span></p>
+            <p>Current Number of Unmilked Cows: <span id="cowCount">0</span></p>
+            <p>Total Number of Cows: <span id="totalCowCount">0</span></p>
+            <p>Cows in Cooldown: <span id="cooldownCows">0</span></p>
             <p>Milk: <span id="milkCount">0</span></p>
             <p>Meat: <span id="meatCount">0</span></p>
             <p>Week: <span id="weekCount">1</span></p>
         </div>
 
-        <h2>Choose Activity</h2>
-        <div id="allocations">
-            <button class="activityButton" onclick="setActivity('steal')">Steal Cows</button>
-            <button class="activityButton" onclick="setActivity('tend')">Tend Cows</button>
-            <button class="activityButton" onclick="setActivity('slaughter')">Slaughter Cows</button>
+        <h2>Select Activity</h2>
+        <div id="activities">
+            <button onclick="setActivity('steal')">Steal Cows</button>
+            <button onclick="setActivity('tend')">Tend Cows</button>
+            <button onclick="setActivity('slaughter')">Slaughter Cows</button>
         </div>
 
         <div id="activityImages">
@@ -49,7 +49,7 @@
         <p id="summaryText"></p>
         <img id="activityImage" src="" alt="Activity Summary" />
         <br/>
-        <button id="nextActivityButton">Next Activity</button>
+        <button id="nextActivityButton">Continue to Next Week</button>
     </div>
 
     <script src="game.js"></script>
