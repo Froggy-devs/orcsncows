@@ -1,10 +1,11 @@
 let orcCount = 10;
-let cowCount = 0;
+let cowCount = 0;             // Counts milkable (unmilked) cows
+let totalCowCount = 0;        // Tracks total number of cows including those in cooldown
 let milkCount = 0;
 let meatCount = 0;
 let weekCount = 1;
 let orcStrength = 1;
-let milkCooldownCows = [];  // Array to track each cow's cooldown time
+let milkCooldownCows = [];    // Array to track each cow's cooldown time
 let successfulMilkings = [];
 let currentActivity = "";
 
@@ -69,6 +70,7 @@ function passWeek() {
         // Steal cows
         let cowsStolen = Math.floor(Math.random() * allocatedOrcs * orcStrength);
         cowCount += cowsStolen;
+        totalCowCount += cowsStolen; // Increase total cow count by stolen cows
         initializeCows(cowsStolen);
 
         summaryText += `- ${allocatedOrcs} orcs went out to steal cows.\n`;
@@ -87,7 +89,7 @@ function passWeek() {
                 if (Math.random() < milkingChance) {
                     successfulMilkCount++;
                     milkCooldownCows.push({ weeks: 5 });
-                    cowCount--;
+                    cowCount--;       // Decrease milkable cow count
                     newCowsInCooldown++;
                 }
             }
@@ -101,6 +103,7 @@ function passWeek() {
         // Handle slaughtering
         let cowsSlaughtered = Math.min(allocatedOrcs, cowCount);
         cowCount -= cowsSlaughtered;
+        totalCowCount -= cowsSlaughtered; // Reduce total cow count by slaughtered cows
         let meatGained = cowsSlaughtered * (cowsSlaughtered >= 10 ? 2 : 1);
         meatCount += meatGained;
         orcStrength += Math.floor(meatGained / 5);
@@ -117,7 +120,8 @@ function passWeek() {
     summaryText += `- ${newCowsInCooldown} cows entered cooldown this week.\n`;
     summaryText += `- ${cowsExitingCooldown} cows left cooldown this week.\n`;
     summaryText += `- ${totalCowsInCooldown} cows are currently in cooldown.\n`;
-    summaryText += `- Current number of cows: ${cowCount}\n`;
+    summaryText += `- Current number of unmilked cows: ${cowCount}\n`;  // Updated label for milkable cows
+    summaryText += `- Total number of cows: ${totalCowCount}\n`;          // New statistic for total cows
     summaryText += `- Current number of orcs: ${orcCount}\n`;
 
     // Update the UI with the latest counts
