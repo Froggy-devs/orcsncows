@@ -6,9 +6,11 @@ function passWeek() {
 
     let allocatedOrcs = orcCount;
     let summaryText = `Week ${weekCount} Summary:\n`;
+    let newCowsInCooldown = 0;  // Track cows going into cooldown this week
 
-    // Temporary variable to count cows entering cooldown this week
-    let newCowsInCooldown = 0;
+    console.log(`Starting Week ${weekCount}`);
+    console.log(`Initial Unmilked Cows: ${cowCount}`);
+    console.log(`Initial Cows in Cooldown: ${milkCooldownCows.length}`);
 
     if (currentActivity === "steal") {
         // Steal cows
@@ -21,21 +23,23 @@ function passWeek() {
         summaryText += `- Orcs successfully stole ${cowsStolen} cows.\n`;
 
     } else if (currentActivity === "tend") {
-        // Handle milking
+        // Handle milking with available unmilked cows
         let successfulMilkCount = 0;
+        let milkableCows = cowCount; // Explicitly define milkable cows from the unmilked cow count
 
-        if (cowCount > 0) {
-            let orcsPerCow = allocatedOrcs / cowCount;
+        if (milkableCows > 0) {
+            let orcsPerCow = allocatedOrcs / milkableCows;
 
-            for (let i = 0; i < cowCount; i++) {
+            for (let i = 0; i < milkableCows; i++) {
                 let milkingChance = Math.min(1, orcsPerCow * 0.3);
                 if (Math.random() < milkingChance) {
                     successfulMilkCount++;
                     milkCooldownCows.push({ weeks: 5 });
-                    cowCount--;       // Decrease milkable cow count
+                    cowCount--;       // Decrease unmilked cow count as this cow is milked
                     newCowsInCooldown++;
                 }
             }
+
             summaryText += `- ${allocatedOrcs} orcs tended to cows.\n`;
             summaryText += `- Orcs successfully milked ${successfulMilkCount} cows.\n`;
         } else {
@@ -58,8 +62,7 @@ function passWeek() {
     // Update cooldown and count cows exiting cooldown this week
     let cowsExitingCooldown = updateCowCooldowns();
 
-    // Add cows exiting cooldown to cowCount at the *start of the next week*
-    // Here we simply store them in a temporary variable until next week
+    // Only add cows leaving cooldown to the milkable pool next week
     let nextWeekMilkableCows = cowsExitingCooldown;
 
     // Append detailed cooldown information to the summary
@@ -69,6 +72,10 @@ function passWeek() {
     summaryText += `- Current number of unmilked cows: ${cowCount}\n`;
     summaryText += `- Total number of cows: ${totalCowCount}\n`;
     summaryText += `- Current number of orcs: ${orcCount}\n`;
+
+    console.log(`End of Week ${weekCount}`);
+    console.log(`Unmilked Cows After Milking: ${cowCount}`);
+    console.log(`Cows in Cooldown After Updates: ${milkCooldownCows.length}`);
 
     // Update the UI with the latest counts
     document.getElementById('orcCount').innerText = orcCount;
@@ -81,7 +88,8 @@ function passWeek() {
     // Show the weekly summary
     showActivitySummaries([{ text: summaryText, img: 'images/summary.jpg' }]);
 
-    // Reset selections and prepare cows exiting cooldown for next week
-    resetSelections();
+    // Prepare cows exiting cooldown for next week by adding them to milkable cows
     cowCount += nextWeekMilkableCows;
+
+    resetSelections();
 }
