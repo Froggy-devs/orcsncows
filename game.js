@@ -1,3 +1,41 @@
+let orcCount = 10;
+let cowCount = 0;
+let totalCowCount = 0;
+let milkCount = 0;
+let meatCount = 0;
+let weekCount = 1;
+let orcStrength = 1;
+let milkCooldownCows = [];
+let currentActivity = null;
+
+function setActivity(activity) {
+    currentActivity = activity;
+    updateActivityImages();
+}
+
+function updateActivityImages() {
+    document.getElementById('stealingOrcsImg').style.display = currentActivity === 'steal' ? "inline-block" : "none";
+    document.getElementById('milkingOrcsImg').style.display = currentActivity === 'tend' ? "inline-block" : "none";
+    document.getElementById('slaughteringOrcsImg').style.display = currentActivity === 'slaughter' ? "inline-block" : "none";
+}
+
+function resetSelections() {
+    currentActivity = null;
+    updateActivityImages();
+}
+
+function updateCowCooldowns() {
+    let cowsExitingCooldown = 0;
+    for (let i = 0; i < milkCooldownCows.length; i++) {
+        milkCooldownCows[i].weeks--;
+        if (milkCooldownCows[i].weeks <= 0) {
+            milkCooldownCows.splice(i, 1);
+            cowsExitingCooldown++;
+        }
+    }
+    return cowsExitingCooldown;
+}
+
 function passWeek() {
     if (!currentActivity) {
         document.getElementById('message').innerText = "Please select an activity!";
@@ -6,27 +44,20 @@ function passWeek() {
 
     let allocatedOrcs = orcCount;
     let summaryText = `Week ${weekCount} Summary:\n`;
-    let newCowsInCooldown = 0;  // Track cows going into cooldown this week
-
-    console.log(`Starting Week ${weekCount}`);
-    console.log(`Initial Unmilked Cows: ${cowCount}`);
-    console.log(`Initial Cows in Cooldown: ${milkCooldownCows.length}`);
+    let newCowsInCooldown = 0;
 
     if (currentActivity === "steal") {
-        // Steal cows
         let cowsStolen = Math.floor(Math.random() * allocatedOrcs * orcStrength);
         cowCount += cowsStolen;
         totalCowCount += cowsStolen;
-        initializeCows(cowsStolen);
 
-        summaryText += `- ${allocatedOrcs} orcs went out to steal cows.\n`;
-        summaryText += `- Orcs successfully stole ${cowsStolen} cows.\n`;
+        summaryText += `- ${allocatedOrcs} orcs went to steal cows.\n`;
+        summaryText += `- Orcs stole ${cowsStolen} cows.\n`;
 
     } else if (currentActivity === "tend") {
-        // Handle milking with available unmilked cows
         let successfulMilkCount = 0;
-        let milkableCows = cowCount; // Explicitly define milkable cows from the unmilked cow count
-
+        let milkableCows = cowCount;
+        
         if (milkableCows > 0) {
             let orcsPerCow = allocatedOrcs / milkableCows;
 
@@ -35,19 +66,18 @@ function passWeek() {
                 if (Math.random() < milkingChance) {
                     successfulMilkCount++;
                     milkCooldownCows.push({ weeks: 5 });
-                    cowCount--;       // Decrease unmilked cow count as this cow is milked
+                    cowCount--;
                     newCowsInCooldown++;
                 }
             }
 
-            summaryText += `- ${allocatedOrcs} orcs tended to cows.\n`;
-            summaryText += `- Orcs successfully milked ${successfulMilkCount} cows.\n`;
+            summaryText += `- ${allocatedOrcs} orcs tended cows.\n`;
+            summaryText += `- Orcs milked ${successfulMilkCount} cows.\n`;
         } else {
             summaryText += `- ${allocatedOrcs} orcs tried to milk, but no cows were available.\n`;
         }
 
     } else if (currentActivity === "slaughter") {
-        // Handle slaughtering
         let cowsSlaughtered = Math.min(allocatedOrcs, cowCount);
         cowCount -= cowsSlaughtered;
         totalCowCount -= cowsSlaughtered;
@@ -56,40 +86,49 @@ function passWeek() {
         orcStrength += Math.floor(meatGained / 5);
 
         summaryText += `- ${allocatedOrcs} orcs slaughtered cows.\n`;
-        summaryText += `- Orcs slaughtered ${cowsSlaughtered} cows and gained ${meatGained} meat.\n`;
+        summaryText += `- Orcs gained ${meatGained} meat from ${cowsSlaughtered} cows.\n`;
     }
 
-    // Update cooldown and count cows exiting cooldown this week
     let cowsExitingCooldown = updateCowCooldowns();
+    summaryText += `- ${newCowsInCooldown} cows entered cooldown.\n`;
+    summaryText += `- ${cowsExitingCooldown} cows left cooldown.\n`;
+    summaryText += `- ${milkCooldownCows.length} cows are in cooldown.\n`;
+    summaryText += `- Unmilked cows: ${cowCount}\n`;
+    summaryText += `- Total cows: ${totalCowCount}\n`;
 
-    // Only add cows leaving cooldown to the milkable pool next week
-    let nextWeekMilkableCows = cowsExitingCooldown;
-
-    // Append detailed cooldown information to the summary
-    summaryText += `- ${newCowsInCooldown} cows entered cooldown this week.\n`;
-    summaryText += `- ${cowsExitingCooldown} cows left cooldown this week.\n`;
-    summaryText += `- ${milkCooldownCows.length} cows are currently in cooldown.\n`;
-    summaryText += `- Current number of unmilked cows: ${cowCount}\n`;
-    summaryText += `- Total number of cows: ${totalCowCount}\n`;
-    summaryText += `- Current number of orcs: ${orcCount}\n`;
-
-    console.log(`End of Week ${weekCount}`);
-    console.log(`Unmilked Cows After Milking: ${cowCount}`);
-    console.log(`Cows in Cooldown After Updates: ${milkCooldownCows.length}`);
-
-    // Update the UI with the latest counts
     document.getElementById('orcCount').innerText = orcCount;
     document.getElementById('cowCount').innerText = cowCount;
+    document.getElementById('totalCowCount').innerText = totalCowCount;
     document.getElementById('milkCount').innerText = milkCount;
     document.getElementById('meatCount').innerText = meatCount;
     document.getElementById('weekCount').innerText = ++weekCount;
     document.getElementById('cooldownCows').innerText = milkCooldownCows.length;
 
-    // Show the weekly summary
     showActivitySummaries([{ text: summaryText, img: 'images/summary.jpg' }]);
-
-    // Prepare cows exiting cooldown for next week by adding them to milkable cows
-    cowCount += nextWeekMilkableCows;
-
     resetSelections();
+}
+
+function showActivitySummaries(activitySummaries) {
+    let currentActivityIndex = 0;
+
+    function displayNextActivity() {
+        if (currentActivityIndex >= activitySummaries.length) {
+            continueGame();
+            return;
+        }
+
+        const { text, img } = activitySummaries[currentActivityIndex++];
+        document.getElementById('summaryText').innerText = text;
+        document.getElementById('activityImage').src = img;
+    }
+
+    document.getElementById('gameScreen').style.display = 'none';
+    document.getElementById('summaryScreen').style.display = 'block';
+    document.getElementById('nextActivityButton').onclick = displayNextActivity;
+    displayNextActivity();
+}
+
+function continueGame() {
+    document.getElementById('gameScreen').style.display = 'block';
+    document.getElementById('summaryScreen').style.display = 'none';
 }
