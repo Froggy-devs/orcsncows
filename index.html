@@ -18,9 +18,9 @@
         </div>
 
         <div id="actions">
-            <button onclick="playerAction('milking')">Milk Cows</button>
-            <button onclick="playerAction('stealing')">Steal Cows</button>
-            <button onclick="playerAction('relaxing')">Relax</button>
+            <button onclick="selectAction('milking')">Milk Cows</button>
+            <button onclick="selectAction('stealing')">Steal Cows</button>
+            <button onclick="selectAction('relaxing')">Relax</button>
         </div>
 
         <div id="action-image">
@@ -30,7 +30,7 @@
         <div id="summary">
             <h3>Weekly Summary</h3>
             <p id="summary-text"></p>
-            <button onclick="nextWeek()">Next Week</button>
+            <button id="next-week-button" onclick="nextWeek()" disabled>Next Week</button>
         </div>
     </div>
 
