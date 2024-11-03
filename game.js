@@ -4,7 +4,7 @@ let unmilkedCows = 0;
 let orcsBornThisWeek = 0;
 let selectedAction = null;
 
-// Milk cooldowns and stages
+// Cooldown and milking stages
 let milkCooldowns = [0, 0, 0, 0, 0];
 let milkingStages = [0, 0, 0, 0, 0];
 let unmilkableCows = 0;
@@ -21,6 +21,12 @@ function cooldownProgress() {
         milkCooldowns[i] = milkCooldowns[i - 1];
     }
     milkCooldowns[0] = 0;
+}
+
+// Function for selecting an action
+function selectAction(action) {
+    selectedAction = action;
+    document.getElementById("action-img").src = `images/${action}.jpg`;
 }
 
 // Milking function
@@ -59,14 +65,7 @@ function relaxing() {
     orcsBornThisWeek = 0;
 }
 
-// Function to select player action
-function selectAction(action) {
-    selectedAction = action;
-    document.getElementById("action-img").src = `images/${action}.jpg`;
-    document.getElementById("next-week-button").disabled = false;
-}
-
-// Function to execute the selected action and show summary
+// Function to execute the selected action, progress the week, and display the summary
 function nextWeek() {
     if (!selectedAction) return;
 
@@ -77,20 +76,23 @@ function nextWeek() {
 
     // Progress to the next week
     cooldownProgress();
-    displaySummary(selectedAction);
+    displaySummary();
 
     // Reset for the next week
     selectedAction = null;
-    document.getElementById("next-week-button").disabled = true;
     document.getElementById("week-number").innerText = ++week;
+
+    // Switch to summary screen
+    document.getElementById("action-selection").style.display = "none";
+    document.getElementById("summary-screen").style.display = "block";
 }
 
-// Function to display the weekly summary
-function displaySummary(action) {
+// Display weekly summary
+function displaySummary() {
     let milkableCows = calculateMilkableCows();
     let totalCows = milkableCows + unmilkableCows + milkCooldowns.reduce((a, b) => a + b, 0);
 
-    let summaryText = `This week, the orcs chose to ${action}.<br>
+    let summaryText = `This week, the orcs chose to ${selectedAction}.<br>
         Orcs born this week: ${orcsBornThisWeek}.<br>
         Total cows: ${totalCows}.<br>
         Milkable cows: ${milkableCows}.<br>
@@ -101,4 +103,10 @@ function displaySummary(action) {
     document.getElementById("total-cows-count").innerText = totalCows;
     document.getElementById("milkable-cows-count").innerText = milkableCows;
     document.getElementById("orcs-born-count").innerText = orcsBornThisWeek;
+}
+
+// Return to action selection for the next week
+function goToActionSelection() {
+    document.getElementById("summary-screen").style.display = "none";
+    document.getElementById("action-selection").style.display = "block";
 }
