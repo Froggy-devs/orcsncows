@@ -3,53 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orc Tribe Management</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #282c34; color: white; text-align: center; }
-        #stats, #activities { margin: 20px; }
-        button { margin: 10px; padding: 10px 20px; font-size: 16px; }
-        img { margin-top: 10px; border: 2px solid white; width: 150px; height: auto; display: inline-block; }
-        #activityImages img { margin: 5px; }
-        #summaryScreen { display: none; }
-        #gameScreen { display: block; }
-    </style>
+    <title>Orc Clan Game</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Orc Tribe Management</h1>
-
-    <div id="gameScreen">
-        <div id="stats">
-            <p>Orcs: <span id="orcCount">10</span></p>
-            <p>Current Number of Unmilked Cows: <span id="cowCount">0</span></p>
-            <p>Total Number of Cows: <span id="totalCowCount">0</span></p>
-            <p>Cows in Cooldown: <span id="cooldownCows">0</span></p>
-            <p>Milk: <span id="milkCount">0</span></p>
-            <p>Meat: <span id="meatCount">0</span></p>
-            <p>Week: <span id="weekCount">1</span></p>
+    <h1>Orc Clan Game</h1>
+    <div id="game">
+        <h2>Week <span id="week-number">1</span></h2>
+        <div id="orcs-info">
+            <p>Orcs: <span id="orcs-count">10</span></p>
+            <p>Total Cows: <span id="total-cows-count">0</span></p>
+            <p>Milkable Cows: <span id="milkable-cows-count">0</span></p>
+            <p>Orcs Born This Week: <span id="orcs-born-count">0</span></p>
         </div>
 
-        <h2>Select Activity</h2>
-        <div id="activities">
-            <button onclick="setActivity('steal')">Steal Cows</button>
-            <button onclick="setActivity('tend')">Tend Cows</button>
-            <button onclick="setActivity('slaughter')">Slaughter Cows</button>
+        <div id="actions">
+            <button onclick="playerAction('milking')">Milk Cows</button>
+            <button onclick="playerAction('stealing')">Steal Cows</button>
+            <button onclick="playerAction('relaxing')">Relax</button>
         </div>
 
-        <div id="activityImages">
-            <img id="stealingOrcsImg" src="images/stealing.jpg" alt="Orcs Stealing Cows" style="display: none;">
-            <img id="milkingOrcsImg" src="images/milking.jpg" alt="Orcs Milking Cows" style="display: none;">
-            <img id="slaughteringOrcsImg" src="images/slaughtering.jpg" alt="Orcs Slaughtering Cows" style="display: none;">
+        <div id="action-image">
+            <img id="action-img" src="images/summary.jpg" alt="Action Image">
         </div>
 
-        <button onclick="passWeek()">Submit Activity</button>
-        <p id="message"></p>
-    </div>
-
-    <div id="summaryScreen">
-        <p id="summaryText"></p>
-        <img id="activityImage" src="" alt="Activity Summary" />
-        <br/>
-        <button id="nextActivityButton">Continue to Next Week</button>
+        <div id="summary">
+            <h3>Weekly Summary</h3>
+            <p id="summary-text"></p>
+            <button onclick="nextWeek()">Next Week</button>
+        </div>
     </div>
 
     <script src="game.js"></script>
