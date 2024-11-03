@@ -1,0 +1,22 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+#game {
+    max-width: 600px;
+    margin: auto;
+}
+
+#actions button {
+    margin: 10px;
+}
+
+#summary {
+    margin-top: 20px;
+}
+
+#action-image img {
+    max-width: 100%;
+    height: auto;
+}
