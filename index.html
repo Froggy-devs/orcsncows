@@ -8,8 +8,13 @@
 </head>
 <body>
     <h1>Orc Clan Game</h1>
+
+    <!-- Week and Orc Info -->
     <div id="game">
-        <h2>Week <span id="week-number">1</span></h2>
+        <div id="week-info">
+            <h2>Week <span id="week-number">1</span></h2>
+        </div>
+
         <div id="orcs-info">
             <p>Orcs: <span id="orcs-count">10</span></p>
             <p>Total Cows: <span id="total-cows-count">0</span></p>
@@ -17,20 +22,23 @@
             <p>Orcs Born This Week: <span id="orcs-born-count">0</span></p>
         </div>
 
-        <div id="actions">
+        <!-- Action Selection Screen -->
+        <div id="action-selection">
+            <h3>Choose an Action</h3>
             <button onclick="selectAction('milking')">Milk Cows</button>
             <button onclick="selectAction('stealing')">Steal Cows</button>
             <button onclick="selectAction('relaxing')">Relax</button>
+            <div id="selected-action">
+                <img id="action-img" src="images/summary.jpg" alt="Action Image">
+            </div>
+            <button id="next-week-button" onclick="nextWeek()">Next Week</button>
         </div>
 
-        <div id="action-image">
-            <img id="action-img" src="images/summary.jpg" alt="Action Image">
-        </div>
-
-        <div id="summary">
+        <!-- Weekly Summary Screen -->
+        <div id="summary-screen" style="display: none;">
             <h3>Weekly Summary</h3>
             <p id="summary-text"></p>
-            <button id="next-week-button" onclick="nextWeek()" disabled>Next Week</button>
+            <button onclick="goToActionSelection()">Continue</button>
         </div>
     </div>
 
