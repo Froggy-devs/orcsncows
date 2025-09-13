@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,16 +18,16 @@
 
         <div id="orcs-info">
             <p>Orcs: <span id="orcs-count">10</span></p>
-            <p>Total Cows: <span id="total-cows-count">0</span></p>
-            <p>Milkable Cows: <span id="milkable-cows-count">0</span></p>
-            <p>Orcs Born This Week: <span id="orcs-born-count">0</span></p>
+            <p>Total Elves: <span id="total-elves-count">0</span></p>
+            <p>Breedable Elves: <span id="breedable-elves-count">0</span></p>
+            <p>New Orcs Born This Week: <span id="orcs-born-count">0</span></p>
         </div>
 
         <!-- Action Selection Screen -->
         <div id="action-selection">
             <h3>Choose an Action</h3>
-            <button onclick="selectAction('milking')">Milk Cows</button>
-            <button onclick="selectAction('stealing')">Steal Cows</button>
+            <button onclick="selectAction('breeding')">Breed Elves</button>
+            <button onclick="selectAction('capturing')">Capture Elves</button>
             <button onclick="selectAction('relaxing')">Relax</button>
             <div id="selected-action">
                 <img id="action-img" src="images/summary.jpg" alt="Action Image">
